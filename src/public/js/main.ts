@@ -260,5 +260,5 @@ function downloadVideo(): void {
 // Exportar as funções para o escopo global
 window.getFormatDuration = getFormatDuration;
 window.resetForm = resetForm;
-window.getVideoInfo = getVideoInfo;
+window.getVideoInfo = getVideoInfo; 
 window.downloadVideo = downloadVideo; 
