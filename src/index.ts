@@ -7,7 +7,7 @@ import { QualityType, QualityTypeLabel } from './enum/quality-type.enum';
 import 'dotenv/config';
 
 const app = express();
-const port = process.env.PORT || 3018;
+const port = process.env.PORT || 3018; 
 
 // Middleware para processar dados do formulário
 app.use(express.urlencoded({ extended: true }));
