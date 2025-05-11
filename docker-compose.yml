@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3018:3018"
+    volumes:
+      - ./src:/app/src
+      - ./dist:/app/dist
+      - ./openvpn:/etc/openvpn
+    environment:
+      - PORT=3018
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    restart: unless-stopped 

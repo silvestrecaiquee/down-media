@@ -1,0 +1,33 @@
+{
+  "name": "down-media",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx ts-node src/app.ts",
+    "build": "npm run build:client && npm run build:server && npm run copy-public",
+    "build:client": "tsc --project tsconfig.client.json",
+    "build:server": "tsc",
+    "copy-public": "cp -r src/public dist/",
+    "dev:server": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev:client": "tsc --watch --project tsconfig.client.json",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@distube/ytdl-core": "^4.16.6",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2" 
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.13.14",
+    "concurrently": "^8.2.2",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.2"
+  }
+}
