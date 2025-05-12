@@ -3,6 +3,7 @@ import ytdl from '@distube/ytdl-core';
 import { getFormatDuration, getFormats } from './helper';
 import express, { Request, RequestHandler, Response } from 'express';
 import { QualityType, QualityTypeLabel } from './enum/quality-type.enum';
+import { Cookie } from 'undici-types';
 
 import 'dotenv/config';
 
@@ -22,6 +23,24 @@ app.set('view engine', 'ejs');
 
 // Armazenar o progresso do download
 const downloadProgress = new Map();
+
+
+// function parseCookies(cookieString: string): Cookie[] {
+//     return cookieString.split(';').map(c => {
+//         const [name, ...rest] = c.trim().split('=');
+//         return {
+//             name,
+//             value: rest.join('=')
+//         };
+//     });
+// }
+
+// const rawCookies = process.env.YOUTUBE_COOKIES || '';
+// const cookies = parseCookies(rawCookies);
+// const agent = ytdl.createAgent(cookies, {
+//     pipelining: 5
+// });
+
 
 // Rota principal
 app.get('/', async (req: Request, res: Response) => {
@@ -228,7 +247,7 @@ app.post('/download', (async (req, res) => {
             format: selectedFormat,
             requestOptions: {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
                 }
             }
         });
@@ -239,7 +258,7 @@ app.post('/download', (async (req, res) => {
         stream.on('data', (chunk) => {
             downloadedBytes += chunk.length;
             const progress = totalBytes ? Math.min(100, Math.round((downloadedBytes / totalBytes) * 100)) : 0;
-            downloadProgress.set(downloadId, { 
+            downloadProgress.set(downloadId, {
                 status: 'downloading',
                 progress,
                 downloadedBytes,
@@ -249,7 +268,7 @@ app.post('/download', (async (req, res) => {
 
         stream.on('info', (info, format) => {
             console.log('6. Stream info recebida');
-            downloadProgress.set(downloadId, { 
+            downloadProgress.set(downloadId, {
                 status: 'started',
                 progress: 0,
                 title: info.videoDetails.title
@@ -258,7 +277,7 @@ app.post('/download', (async (req, res) => {
 
         stream.on('error', (error) => {
             console.error('Erro no stream:', error);
-            downloadProgress.set(downloadId, { 
+            downloadProgress.set(downloadId, {
                 status: 'error',
                 error: 'Erro ao processar o vídeo'
             });
@@ -272,7 +291,7 @@ app.post('/download', (async (req, res) => {
 
         stream.on('end', () => {
             console.log('8. Download concluído');
-            downloadProgress.set(downloadId, { 
+            downloadProgress.set(downloadId, {
                 status: 'completed',
                 progress: 100
             });
@@ -284,7 +303,7 @@ app.post('/download', (async (req, res) => {
     } catch (error) {
         console.error('Erro geral:', error);
         const downloadId = Date.now().toString();
-        downloadProgress.set(downloadId, { 
+        downloadProgress.set(downloadId, {
             status: 'error',
             error: 'Erro ao processar o vídeo'
         });
