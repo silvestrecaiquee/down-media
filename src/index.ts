@@ -116,7 +116,6 @@ app.get('/', async (req: Request, res: Response) => {
     }
 
     try {
-        console.log('Passa aqui 1')
         const getInfos = await ytdl.getInfo(url as string,
             // { agent }
         );
