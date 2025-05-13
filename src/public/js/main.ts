@@ -254,7 +254,7 @@ function downloadVideo(): void {
                                 if (data.downloadedBytes && data.totalBytes) {
                                     const downloaded = (data.downloadedBytes / 1024 / 1024).toFixed(2);
                                     const total = (data.totalBytes / 1024 / 1024).toFixed(2);
-                                    progressStatus.textContent = `${downloaded} MB de ${total} MB T`;
+                                    progressStatus.textContent = `${downloaded} MB de ${total} MB`;
                                 }
                             }
                             
