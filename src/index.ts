@@ -41,37 +41,37 @@ const downloadProgress = new Map();
 //     pipelining: 5
 // });
 
-const proxyList = [
-    'http://152.26.229.66:9443',
-    'http://152.26.229.88:9443',
-    'http://152.26.231.42:9443',
-    'http://152.26.231.77:9443',
-    'http://152.26.229.88:9443',
-    'http://177.234.241.27:999',
-    'http://177.234.241.30:999',
-    'http://177.234.241.26:999',
-    'http://177.234.241.25:999'
-];
+// const proxyList = [
+//     'http://152.26.229.66:9443',
+//     'http://152.26.229.88:9443',
+//     'http://152.26.231.42:9443',
+//     'http://152.26.231.77:9443',
+//     'http://152.26.229.88:9443',
+//     'http://177.234.241.27:999',
+//     'http://177.234.241.30:999',
+//     'http://177.234.241.26:999',
+//     'http://177.234.241.25:999'
+// ];
 
-// Seleciona um proxy aleatório
-const randomProxy = proxyList[Math.floor(Math.random() * proxyList.length)];
+// // Seleciona um proxy aleatório
+// const randomProxy = proxyList[Math.floor(Math.random() * proxyList.length)];
 
 // const agent = ytdl.createProxyAgent({ uri: proxyList[0] });
 
-const agent = ytdl.createAgent([
-    {
-        domain: ".youtube.com",
-        expirationDate: 1234567890,
-        hostOnly: false,
-        httpOnly: true,
-        name: "---xxx---",
-        path: "/",
-        sameSite: "no_restriction",
-        secure: true,
-        value: "---xxx---",
-    },
+// const agent = ytdl.createAgent([
+//     {
+//         domain: ".youtube.com",
+//         expirationDate: 1234567890,
+//         hostOnly: false,
+//         httpOnly: true,
+//         name: "---xxx---",
+//         path: "/",
+//         sameSite: "no_restriction",
+//         secure: true,
+//         value: "---xxx---",
+//     },
 
-]);
+// ]);
   
 
 
@@ -118,7 +118,7 @@ app.get('/', async (req: Request, res: Response) => {
     try {
         console.log('Passa aqui 1')
         const getInfos = await ytdl.getInfo(url as string, 
-            { agent }
+            // { agent }
         );
         const { title, author, isPrivate, thumbnails, publishDate, lengthSeconds } = getInfos.videoDetails;
         const thumbnail = thumbnails[thumbnails.length - 1].url;
@@ -178,7 +178,7 @@ app.post('/video-info', (async (req, res) => {
 
     try {
         const getInfos = await ytdl.getInfo(url, 
-            { agent }
+            // { agent }
         );
         const { title, author, isPrivate, thumbnails, publishDate, lengthSeconds } = getInfos.videoDetails;
         const thumbnail = thumbnails[thumbnails.length - 1].url;
@@ -279,7 +279,7 @@ app.post('/download', (async (req, res) => {
         console.log('3. Obtendo informações do vídeo...');
 
         const info = await ytdl.getInfo(url, 
-            { agent }
+            // { agent }
         );
         const { title } = info.videoDetails;
 
@@ -293,7 +293,7 @@ app.post('/download', (async (req, res) => {
 
         console.log('5. Iniciando stream do vídeo...');
         const stream = ytdl(url, {
-            agent,
+            // agent,
             // format: {
             //     mimeType: 'video/mp4; codecs="avc1.4d401f"',
             //     qualityLabel: '720p',
@@ -394,5 +394,5 @@ app.post('/download', (async (req, res) => {
 
 // Iniciando o servidor
 app.listen(port, () => {
-    console.log(`Servidor rodando em 3 http://localhost:${port}`);
+    console.log(`Servidor rodando em 4 http://localhost:${port}`);
 });
