@@ -56,22 +56,7 @@ const proxyList = [
 // Seleciona um proxy aleatório
 const randomProxy = proxyList[Math.floor(Math.random() * proxyList.length)];
 
-// const agent = ytdl.createProxyAgent({ uri: proxyList[0] });
-
-const agent = ytdl.createAgent([
-    {
-        domain: ".youtube.com",
-        expirationDate: 1234567890,
-        hostOnly: false,
-        httpOnly: true,
-        name: "---xxx---",
-        path: "/",
-        sameSite: "no_restriction",
-        secure: true,
-        value: "---xxx---",
-    },
-
-]);
+const agent = ytdl.createProxyAgent({ uri: proxyList[0] });
   
 
 
@@ -118,7 +103,7 @@ app.get('/', async (req: Request, res: Response) => {
     try {
         console.log('Passa aqui 1')
         const getInfos = await ytdl.getInfo(url as string, 
-            { agent }
+            // { agent }
         );
         const { title, author, isPrivate, thumbnails, publishDate, lengthSeconds } = getInfos.videoDetails;
         const thumbnail = thumbnails[thumbnails.length - 1].url;
@@ -178,7 +163,7 @@ app.post('/video-info', (async (req, res) => {
 
     try {
         const getInfos = await ytdl.getInfo(url, 
-            { agent }
+            // { agent }
         );
         const { title, author, isPrivate, thumbnails, publishDate, lengthSeconds } = getInfos.videoDetails;
         const thumbnail = thumbnails[thumbnails.length - 1].url;
@@ -279,7 +264,7 @@ app.post('/download', (async (req, res) => {
         console.log('3. Obtendo informações do vídeo...');
 
         const info = await ytdl.getInfo(url, 
-            { agent }
+            // { agent }
         );
         const { title } = info.videoDetails;
 
@@ -293,7 +278,7 @@ app.post('/download', (async (req, res) => {
 
         console.log('5. Iniciando stream do vídeo...');
         const stream = ytdl(url, {
-            agent,
+            // agent,
             // format: {
             //     mimeType: 'video/mp4; codecs="avc1.4d401f"',
             //     qualityLabel: '720p',
@@ -394,5 +379,5 @@ app.post('/download', (async (req, res) => {
 
 // Iniciando o servidor
 app.listen(port, () => {
-    console.log(`Servidor rodando em 3 http://localhost:${port}`);
+    console.log(`Servidor rodando em 2 http://localhost:${port}`);
 });

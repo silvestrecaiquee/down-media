@@ -1,5 +1,5 @@
-# Etapa 1: Build com TypeScript
-FROM node:22.12.0-alpine AS builder
+# Etapa 1: Builder com todas as dependências
+FROM node:22.12.0 AS builder
 WORKDIR /app
 
 COPY package*.json ./
@@ -8,16 +8,15 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Etapa 2: Imagem final apenas com JS compilado
-FROM node:22.12.0-alpine
+# Etapa 2: Final com apenas produção
+FROM node:22.12.0
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install --omit=dev 
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/dist/public ./dist/public
-COPY --from=builder /app/dist/views ./dist/views
+COPY --from=builder /app/node_modules ./node_modules
 
 ENV PORT=3000
 EXPOSE 3000
