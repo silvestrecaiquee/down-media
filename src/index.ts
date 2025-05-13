@@ -72,7 +72,7 @@ const downloadProgress = new Map();
 //     },
 
 // ]);
-  
+
 
 
 // Rota principal
@@ -117,7 +117,7 @@ app.get('/', async (req: Request, res: Response) => {
 
     try {
         console.log('Passa aqui 1')
-        const getInfos = await ytdl.getInfo(url as string, 
+        const getInfos = await ytdl.getInfo(url as string,
             // { agent }
         );
         const { title, author, isPrivate, thumbnails, publishDate, lengthSeconds } = getInfos.videoDetails;
@@ -177,7 +177,7 @@ app.post('/video-info', (async (req, res) => {
     }
 
     try {
-        const getInfos = await ytdl.getInfo(url, 
+        const getInfos = await ytdl.getInfo(url,
             // { agent }
         );
         const { title, author, isPrivate, thumbnails, publishDate, lengthSeconds } = getInfos.videoDetails;
@@ -204,9 +204,16 @@ app.post('/video-info', (async (req, res) => {
         });
     } catch (error) {
         console.error('Error - 2: ', error)
-        res.json({
-            error: 'Ocorreu um erro ao fazer o download. Por favor, tente novamente. 2'
-        });
+        if (String(error).includes('Sign in to confirm you’re not a bot')) {
+            console.error('Video restrito: ', error)
+            res.json({
+                error: 'Ocorreu um erro ao fazer o download. Por favor, tente novamente.'
+            });
+        } else {
+            res.json({
+                error: 'Ocorreu um erro ao fazer o download. Por favor, tente novamente.'
+            });
+        }
     }
 }) as RequestHandler);
 
@@ -278,7 +285,7 @@ app.post('/download', (async (req, res) => {
 
         console.log('3. Obtendo informações do vídeo...');
 
-        const info = await ytdl.getInfo(url, 
+        const info = await ytdl.getInfo(url,
             // { agent }
         );
         const { title } = info.videoDetails;
@@ -385,7 +392,7 @@ app.post('/download', (async (req, res) => {
         if (!res.headersSent) {
             console.error('Error - 1: ', error)
             res.status(500).json({
-                error: 'Ocorreu um erro ao fazer o download. Por favor, tente novamente. 2',
+                error: 'Ocorreu um erro ao fazer o download. Por favor, tente novamente.',
                 downloadId
             });
         }
