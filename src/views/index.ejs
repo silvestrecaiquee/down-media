@@ -186,7 +186,7 @@
                                 <div class="max-h-[400px] overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                                     <% relatedVideos.forEach(video => { %>
                                         <div 
-                                            onclick="window.location.href='/?url=https://www.youtube.com/watch?v=<%= video.id %>'"
+                                            onclick="showLoadingAndRedirect('https://www.youtube.com/watch?v=<%= video.id %>')"
                                             class="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
                                         >
                                             <% if (video.thumbnails && video.thumbnails[0]) { %>
@@ -215,5 +215,17 @@
     </div>
 
     <script src="/js/main.js"></script>
+    <script>
+        function showLoadingAndRedirect(url) {
+            // Show loading state
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('video-content').innerHTML = '';
+            
+            // Redirect after a small delay to allow loading state to be visible
+            setTimeout(() => {
+                window.location.href = '/?url=' + url;
+            }, 100);
+        }
+    </script>
 </body>
 </html>
