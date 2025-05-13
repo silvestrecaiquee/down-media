@@ -278,7 +278,7 @@ app.post('/download', (async (req, res) => {
             //     isHLS: false,
             //     isDashMPD: false
             //   },
-            format: selectedFormat,
+            // format: selectedFormat,
             requestOptions: {
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
@@ -311,6 +311,7 @@ app.post('/download', (async (req, res) => {
 
         stream.on('error', (error) => {
             console.error('Erro no stream:', error);
+            console.log('O que ta acontecendo aqui?')
             downloadProgress.set(downloadId, {
                 status: 'error',
                 error: 'Erro ao processar o vídeo'
