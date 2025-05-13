@@ -310,8 +310,8 @@ app.post('/download', (async (req, res) => {
         });
 
         stream.on('error', (error) => {
-            console.error('Erro no stream:', error);
-            console.log('O que ta acontecendo aqui?')
+            console.error('Erro no stream 1:', error);
+            console.error('O que ta acontecendo aqui?')
             downloadProgress.set(downloadId, {
                 status: 'error',
                 error: 'Erro ao processar o vídeo'
