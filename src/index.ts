@@ -299,6 +299,7 @@ app.post('/download', (async (req, res) => {
         res.setHeader('X-Download-Id', downloadId);
 
         console.log('5. Iniciando stream do vídeo...');
+        console.log('URL de download: ', url)
         const stream = ytdl(url, {
             // agent,
             // format: {
