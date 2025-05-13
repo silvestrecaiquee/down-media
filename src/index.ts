@@ -254,7 +254,8 @@ app.post('/download', (async (req, res) => {
         //TODO: Verificar se o formato é um objeto ou uma string
 
         const selectedFormat = format// typeof format === 'string' ? JSON.parse(format) : format;
-
+        console.log('selectedFormat: ', selectedFormat)
+        console.log(' ')
         console.log('2. Formato selecionado:', selectedFormat.qualityLabel);
 
         // Gerar ID único para este download
