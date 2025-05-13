@@ -3,6 +3,7 @@ import ytdl from '@distube/ytdl-core';
 import { getFormatDuration, getFormats } from './helper';
 import express, { Request, RequestHandler, Response } from 'express';
 import { QualityType, QualityTypeLabel } from './enum/quality-type.enum';
+import { Cookie } from 'undici-types';
 
 import 'dotenv/config';
 
@@ -22,6 +23,24 @@ app.set('view engine', 'ejs');
 
 // Armazenar o progresso do download
 const downloadProgress = new Map();
+
+
+// function parseCookies(cookieString: string): Cookie[] {
+//     return cookieString.split(';').map(c => {
+//         const [name, ...rest] = c.trim().split('=');
+//         return {
+//             name,
+//             value: rest.join('=')
+//         };
+//     });
+// }
+
+// const rawCookies = process.env.YOUTUBE_COOKIES || '';
+// const cookies = parseCookies(rawCookies);
+// const agent = ytdl.createAgent(cookies, {
+//     pipelining: 5
+// });
+
 
 // Rota principal
 app.get('/', async (req: Request, res: Response) => {
@@ -186,17 +205,25 @@ app.get('/download-progress/:id', (req, res) => {
 app.post('/download', (async (req, res) => {
     try {
         console.log('1. Iniciando download...');
-        const { url, format } = req.body;
-        const selectedFormat = typeof format === 'string' ? JSON.parse(format) : format;
+
+        const { url, format } = req.body;        
+        
+        //TODO: Verificar se o formato é um objeto ou uma string
+
+        const selectedFormat = format// typeof format === 'string' ? JSON.parse(format) : format;
+
         console.log('2. Formato selecionado:', selectedFormat.qualityLabel);
 
         // Gerar ID único para este download
         const downloadId = Date.now().toString();
+        
         downloadProgress.set(downloadId, { status: 'starting', progress: 0 });
 
         if (!url) {
             console.log('Erro: URL não fornecida');
+        
             downloadProgress.set(downloadId, { status: 'error', error: 'URL não fornecida' });
+        
             return res.status(400).json({
                 error: 'Por favor, insira uma URL do YouTube',
                 downloadId
@@ -213,8 +240,10 @@ app.post('/download', (async (req, res) => {
         }
 
         console.log('3. Obtendo informações do vídeo...');
+        
         const info = await ytdl.getInfo(url);
         const { title } = info.videoDetails;
+        
         console.log('4. Título do vídeo:', title);
 
         // Configurar os headers antes de iniciar o stream
@@ -225,21 +254,45 @@ app.post('/download', (async (req, res) => {
 
         console.log('5. Iniciando stream do vídeo...');
         const stream = ytdl(url, {
+            // format: {
+            //     mimeType: 'video/mp4; codecs="avc1.4d401f"',
+            //     qualityLabel: '720p',
+            //     bitrate: 1077144,
+            //     itag: 136,
+            //     url: 'https://rr1---sn-8p8v-0qpe.googlevideo.com/videoplayback?expire=1747117314&ei=opAiaI2iIY-6-LAPyeqI0Ac&ip=2804%3A1b3%3A3002%3Aba5b%3A203b%3Ae65%3A36b3%3A91b9&id=o-ALg7-CqWjAi0ukYOQuLUiSliI_FNB6eBm66JLLKB9-g8&itag=136&aitags=133%2C134%2C135%2C136%2C137%2C160%2C242%2C243%2C244%2C247%2C248%2C271%2C278%2C313%2C394%2C395%2C396%2C397%2C398%2C399%2C400%2C401&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&met=1747095714%2C&mh=WC&mm=31%2C29&mn=sn-8p8v-0qpe%2Csn-b8u-bpbe&ms=au%2Crdu&mv=m&mvi=1&pl=41&rms=au%2Cau&initcwndbps=2591250&bui=AecWEAZq5Ua-Owkghbr-cByTA-GYoYo7pqB59cd1XAK1cvI1wXW5RLPgHFK9YuwDFAmumRrDMc_d6Uak&spc=wk1kZiAgr_WuMXVdS4gQFKQSrgE8HNo3ltFT9-U47oq276pzkIb1pLSeq_U64nnwrP_0XcA&vprv=1&svpuc=1&mime=video%2Fmp4&ns=VCrf5iRqm8RObLvktjOtnKcQ&rqh=1&gir=yes&clen=49708026&dur=476.499&lmt=1746348465191810&mt=1747095184&fvip=8&keepalive=yes&c=WEB_EMBEDDED_PLAYER&sefc=1&txp=5532534&n=9BcUo_vTlCQvYQ&sparams=expire%2Cei%2Cip%2Cid%2Caitags%2Csource%2Crequiressl%2Cxpc%2Cbui%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Cns%2Crqh%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRgIhAIzq8wh0Qo66TNK9coGZ1sLBQlxTNz9RcfFimdcbGaRTAiEAgJHKnZL0k_SdPdnfflwbLwwTeS9UWNYvzhdREMSpV5E%3D&lsparams=met%2Cmh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Crms%2Cinitcwndbps&lsig=ACuhMU0wRQIhANdZTeX0uRIzlKEZsNXrOr-s3-ANCZnqkc43UWnFv6VFAiBM8nOan63hkL7C5pGqr1w6jb6NxYgo3b3TtgFExPghIQ%3D%3D',
+            //     width: 1280,
+            //     height: 720,
+            //     lastModified: '1746348465191810',
+            //     contentLength: '49708026',
+            //     quality: 'hd720',
+            //     fps: 30,
+            //     projectionType: 'RECTANGULAR',
+            //     averageBitrate: 834554,
+            //     approxDurationMs: '476499',
+            //     hasVideo: true,
+            //     hasAudio: false,
+            //     container: 'mp4',
+            //     codecs: 'avc1.4d401f',
+            //     videoCodec: 'avc1.4d401f',
+            //     isLive: false,
+            //     isHLS: false,
+            //     isDashMPD: false
+            //   },
             format: selectedFormat,
             requestOptions: {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
                 }
             }
         });
 
         let downloadedBytes = 0;
-        const totalBytes = parseInt(selectedFormat.contentLength);
+        const totalBytes = parseInt(JSON.parse(format).contentLength);
 
         stream.on('data', (chunk) => {
             downloadedBytes += chunk.length;
             const progress = totalBytes ? Math.min(100, Math.round((downloadedBytes / totalBytes) * 100)) : 0;
-            downloadProgress.set(downloadId, { 
+            downloadProgress.set(downloadId, {
                 status: 'downloading',
                 progress,
                 downloadedBytes,
@@ -249,7 +302,7 @@ app.post('/download', (async (req, res) => {
 
         stream.on('info', (info, format) => {
             console.log('6. Stream info recebida');
-            downloadProgress.set(downloadId, { 
+            downloadProgress.set(downloadId, {
                 status: 'started',
                 progress: 0,
                 title: info.videoDetails.title
@@ -258,7 +311,7 @@ app.post('/download', (async (req, res) => {
 
         stream.on('error', (error) => {
             console.error('Erro no stream:', error);
-            downloadProgress.set(downloadId, { 
+            downloadProgress.set(downloadId, {
                 status: 'error',
                 error: 'Erro ao processar o vídeo'
             });
@@ -272,7 +325,7 @@ app.post('/download', (async (req, res) => {
 
         stream.on('end', () => {
             console.log('8. Download concluído');
-            downloadProgress.set(downloadId, { 
+            downloadProgress.set(downloadId, {
                 status: 'completed',
                 progress: 100
             });
@@ -284,7 +337,7 @@ app.post('/download', (async (req, res) => {
     } catch (error) {
         console.error('Erro geral:', error);
         const downloadId = Date.now().toString();
-        downloadProgress.set(downloadId, { 
+        downloadProgress.set(downloadId, {
             status: 'error',
             error: 'Erro ao processar o vídeo'
         });
